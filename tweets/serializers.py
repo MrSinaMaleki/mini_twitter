@@ -5,6 +5,9 @@ class TweetSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField(read_only=True)
     likes_count = serializers.SerializerMethodField()
     retweets_count = serializers.SerializerMethodField()
+    original_tweet = serializers.PrimaryKeyRelatedField(
+        queryset=Tweet.objects.all(), required=False, allow_null=True
+    )
 
 
     class Meta:

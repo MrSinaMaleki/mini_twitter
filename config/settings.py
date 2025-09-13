@@ -64,6 +64,9 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'users.User'
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'no-reply@sinatwitter.com'
+
 
 ROOT_URLCONF = 'config.urls'
 
