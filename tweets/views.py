@@ -1,4 +1,4 @@
-
+from django.db.models import Q
 from rest_framework import viewsets, permissions, status
 from tweets.models import Tweet
 from tweets.serializers import TweetSerializer
@@ -40,3 +40,17 @@ class TweetViewSet(viewsets.ModelViewSet):
         )
         serializer = self.get_serializer(new_tweet)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def timeline(self, request):
+        user = request.user
+
+        following_ids = user.following.values_list('following__id', flat=True)
+        tweets = Tweet.objects.filter(
+            Q(author__id__in=following_ids) | Q(author = user)
+        ).order_by('-created_at')
+
+        serializer = TweetSerializer(tweets, many=True)
+        return Response(serializer.data)
+
