@@ -4,6 +4,7 @@ from tweets.models import Tweet
 from tweets.serializers import TweetSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from .permissions import IsAuthorOrReadOnly
 
 from tweets.utils import send_new_tweet_ws
 
@@ -11,7 +12,7 @@ from tweets.utils import send_new_tweet_ws
 class TweetViewSet(viewsets.ModelViewSet):
     queryset = Tweet.objects.all().order_by('-created_at')
     serializer_class = TweetSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated,  IsAuthorOrReadOnly]
 
     def perform_create(self, serializer):
         tweet = serializer.save(author=self.request.user)
