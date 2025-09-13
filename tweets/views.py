@@ -5,13 +5,17 @@ from tweets.serializers import TweetSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
+from tweets.utils import send_new_tweet_ws
+
+
 class TweetViewSet(viewsets.ModelViewSet):
     queryset = Tweet.objects.all().order_by('-created_at')
     serializer_class = TweetSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        tweet = serializer.save(author=self.request.user)
+        send_new_tweet_ws(tweet)
 
     def perform_destroy(self, instance):
         instance.delete()
