@@ -1,7 +1,9 @@
 
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from tweets.models import Tweet
 from tweets.serializers import TweetSerializer
+from rest_framework.response import Response
+from rest_framework.decorators import action
 
 class TweetViewSet(viewsets.ModelViewSet):
     queryset = Tweet.objects.all().order_by('-created_at')
@@ -14,3 +16,27 @@ class TweetViewSet(viewsets.ModelViewSet):
     def perform_destroy(self, instance):
         instance.delete()
 
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def like(self, request, pk=None):
+        tweet = self.get_object()
+        user = request.user
+
+        if user in tweet.likes.all():
+            tweet.likes.remove(user)
+            return Response({'detail': 'Unliked'}, status=status.HTTP_200_OK)
+        else:
+            tweet.likes.add(user)
+            return Response({'detail': 'Liked'}, status=status.HTTP_200_OK)
+
+    # ret-twwet
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def retweet(self, request, pk=None):
+        tweet = self.get_object()
+        new_tweet = Tweet.objects.create(
+            author = request.user,
+            original_tweet=tweet,
+            content = tweet.content
+        )
+        serializer = self.get_serializer(new_tweet)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -13,6 +13,10 @@ class Tweet(models.Model):
 
     is_deleted = models.BooleanField(default=False)
 
+    original_tweet = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='retweets')
+
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='liked_tweets', blank=True)
+
     objects = TweetManger()
     all_objects = TweetManger()
 
