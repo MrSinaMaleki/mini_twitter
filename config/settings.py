@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'djangorestframework',
+    'rest_framework',
+    'rest_framework.simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +50,15 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+AUTH_USER_MODEL = 'users.User'
+
 
 ROOT_URLCONF = 'config.urls'
 
